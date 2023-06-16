@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Order;
 using Product.Data;
 using Related;
 using System;
@@ -16,6 +17,7 @@ namespace Product
         {
             services.AddScoped<ITractorApiClient, TractorApiClient>();
             services.AddRelatedUI();
+            services.AddOrderUI();
 
             return services;
         }

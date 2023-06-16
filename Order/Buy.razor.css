@@ -1,0 +1,19 @@
+﻿#buy {
+    display: block;
+    outline: 3px dashed royalblue;
+    padding: 5px;
+    align-self: center;
+    grid-area: buy;
+}
+
+    #buy button {
+        background: none;
+        border: 1px solid gray;
+        border-radius: 20px;
+        cursor: pointer;
+        display: block;
+        font-size: 20px;
+        outline: none;
+        padding: 20px;
+        width: 100%;
+    }

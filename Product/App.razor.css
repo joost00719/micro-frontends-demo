@@ -9,6 +9,14 @@
     width: 1000px;
     outline: 3px dashed orangered;
     padding: 20px;
+    display: grid;
+    grid-column-gap: 20px;
+    grid-gap: 20px;
+    grid-row-gap: 10px;
+    margin: 20px auto;
+    min-width: 500px;
+    outline: 3px dashed orangered;
+    padding: 15px;
 }
 
 #image {
@@ -63,4 +71,14 @@
     grid-area: reco;
     display: block;
     outline: 3px dashed forestgreen;
+}
+
+::deep #buy {
+    align-self: center;
+    grid-area: buy;
+}
+
+::deep #basket {
+    align-self: center;
+    grid-area: basket;
 }

@@ -23,6 +23,7 @@ namespace Order
         protected override void OnInitialized()
         {
             _basketService.OnChange += CountChanged;
+            CountChanged();
         }
 
         private async void CountChanged()

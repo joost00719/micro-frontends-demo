@@ -58,3 +58,7 @@
     #options img {
         max-width: 100%;
     }
+
+::deep #reco {
+    grid-area: reco;
+}

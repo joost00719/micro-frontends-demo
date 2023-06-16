@@ -12,7 +12,7 @@ namespace Product.Data
         // Get all tractors
         public async Task<IEnumerable<Tractor>> GetTractorsAsync()
         {
-            await Task.Delay(1000);
+            // await Task.Delay(1000);
             return new List<Tractor>
             {
                 new Tractor { Id = 1, Name = "Tractor Porsche-Diesel Master 419", Price = 50000, Image =  "tractor-red.jpg"  },

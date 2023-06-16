@@ -12,7 +12,7 @@ namespace Order.Data
     {
         public Task AddAsync(int tractorId, int quantity);
 
-        public Task<int> GetCount();
+        public int Count { get; }
 
         public event Action? OnChange;
     }
@@ -24,21 +24,16 @@ namespace Order.Data
 
     internal class BasketService : IBasketService
     {
-        private int _count = 0;
+        public int Count { get; private set; }
 
         public event Action? OnChange;
 
         public Task AddAsync(int tractorId, int quantity)
         {
-            _count += quantity;
+            Count += quantity;
             OnChange?.Invoke();
 
             return Task.CompletedTask;
-        }
-
-        public Task<int> GetCount()
-        {
-            return Task.FromResult(_count);
         }
     }
 

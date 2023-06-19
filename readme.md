@@ -9,15 +9,19 @@ The original is made by [micro-frontends.org](https://micro-frontends.org/) and 
 
 The application is composed of 3 Blazor Component Libraries and a Blazor Server Hosted application.
 The hierarchy is as follows:
-* Product
-	* Related
-	* Order
+```
+┌───────────────┐
+│    Product    │
+├───────┬───────┤
+│Related│ Order │
+└───────┴───────┘
+```
 
-The Product component is the main component and it is responsible for rendering the product and the other components.  
-The Related component is responsible for rendering the related products.  
-The Order component is responsible for rendering the buy button and the basket.  
+The `Product` component is the main component and it is responsible for rendering the product and the other components.  
+The `Related` component is responsible for rendering the related products.  
+The `Order` component is responsible for rendering the buy button and the basket.  
 
-![Architecture](/imgs/Screenshot_490.png)
+![Architecture](./imgs/Screenshot_490.png)
 * Red: Product component
 * Green: Related component
 * Blue: Order component
@@ -35,15 +39,15 @@ After that, the project can be accessed at http://localhost:5068
 
 The Product component library contains the "App.razor" component.
 This component is responsible for rendering the product, product picker and
-the other components (Related and Order).
+the other components (`Related` and `Order`).
 
 This component also contains the logic to communicate with the other components.
-It communicates the ProductId with the Related and Order components and it also
-communicates the selected product with the Order and Related components.
+It communicates the `TractorId` with the `Related` and Order `components` and it also
+communicates the selected product with the `Order` and `Related` components.
 
 ### Related component
 
-The Related component library contains the Recos component.
+The `Related` component library contains the Recos component.
 This component is responsible for rendering the related products.
 This component expects a TractorId as parameter.
 The TractorId is used to fetch the related products from the server
@@ -51,7 +55,7 @@ The TractorId is used to fetch the related products from the server
 
 ### Order component
 
-The Order component library contains the `Buy` and `Basket` component.
+The `Order` component library contains the `Buy` and `Basket` component.
 The `Buy` component is responsible for rendering the buy button.
 This component expects a TractorId as parameter.
 This TractorId is used to fetch the price of the product from the server (again, hardcoded in this demo).

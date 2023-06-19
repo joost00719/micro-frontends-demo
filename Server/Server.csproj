@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>6a3503ab-a0e9-4719-b7fd-b2798fd6e562</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	  <DockerfileTag>blazormicrofrontendsdemo</DockerfileTag>
   </PropertyGroup>
 
   <ItemGroup>

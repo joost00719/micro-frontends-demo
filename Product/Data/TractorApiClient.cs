@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Product.Data
+﻿namespace Product.Data
 {
     // fake api "client". In practice this will fetch from some external service
     internal class TractorApiClient : ITractorApiClient

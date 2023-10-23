@@ -1,3 +1,63 @@
 ﻿@page "/"
 
-<Product.App />
+
+@* Create a file upload form for zip files  Create a file upload form for zip files *@
+<EditForm Model="_model" OnValidSubmit="@HandleValidSubmit">
+    <InputFile OnChange="@HandleFileSelected" />
+    <button type="submit" disabled="@(!_model.HasFileToUpload)">Upload</button>
+
+
+    @* Display a list of the files that have been uploaded *@
+    @if (_model.FileUploads != null && _model.FileUploads.Any())
+    {
+        <h3>Uploaded files</h3>
+        <ul>
+            @foreach (var file in _model.FileUploads)
+            {
+                <li>@file.Path</li>
+            }
+        </ul>
+    }
+</EditForm>
+
+@code {
+
+    public class FileUpload
+    {
+        public string Path { get; set; }
+        public byte[] Bytes { get; set; }
+    }
+
+    public class Model
+    {
+        public bool HasFileToUpload => FileUploads.Any();
+        public List<FileUpload> FileUploads { get; set; } = new List<FileUpload>();
+    }
+
+    private Model _model = new Model();
+
+    private async Task HandleValidSubmit()
+    {
+        foreach (var file in _model.FileUploads)
+        {
+            await File.WriteAllBytesAsync(file.Path, file.Bytes);
+        }
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs args)
+    {
+        foreach (var file in args.GetMultipleFiles())
+        {
+            using (var ms = new MemoryStream())
+            using (var fs = file.OpenReadStream())
+            {
+                await fs.CopyToAsync(ms);
+                var fileBytes = ms.ToArray();
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", file.Name);
+                _model.FileUploads.Add(new FileUpload { Path = path, Bytes = fileBytes });
+            }
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+}

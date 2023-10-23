@@ -1,4 +1,5 @@
-using Product;
+
+using RoboPharma.Web.Blazor.Components.Helpers;
 
 namespace Server
 {
@@ -12,8 +13,7 @@ namespace Server
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
 
-            // Add the Product frontend
-            builder.Services.AddProductUI();
+            builder.Services.AddRPComponents();
 
             var app = builder.Build();
 

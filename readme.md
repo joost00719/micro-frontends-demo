@@ -1,7 +1,9 @@
 # Micro-frontends Blazor demo 
 
-This demo is a proof of concept for a micro-frontends architecture using Blazor.
+This demo is a proof of concept for a micro-frontends architecture using Blazor. ([live demo](https://micro-frontend-demo.roza.dev/)).
+
 The original application is written in javascript and was the inspiration to create this demo.
+The original is made by [micro-frontends.org](https://micro-frontends.org/) and their application can be found [here](https://micro-frontends.org/0-model-store/).
 
 ## Architecture
 

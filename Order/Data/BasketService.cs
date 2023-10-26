@@ -14,9 +14,7 @@ namespace Order.Data
 
         public Task<int> GetCount();
 
-        public event HandleChange OnChange;
-
-        public delegate void HandleChange();
+        public event Action? OnChange;
     }
 
     internal interface IPriceApiClient
@@ -28,7 +26,7 @@ namespace Order.Data
     {
         private int _count = 0;
 
-        public event HandleChange OnChange;
+        public event Action? OnChange;
 
         public Task AddAsync(int tractorId, int quantity)
         {

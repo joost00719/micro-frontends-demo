@@ -61,4 +61,6 @@
 
 ::deep #reco {
     grid-area: reco;
+    display: block;
+    outline: 3px dashed forestgreen;
 }

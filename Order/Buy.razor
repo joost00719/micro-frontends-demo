@@ -1,0 +1,6 @@
+﻿@if (_loaded && TractorId != null)
+{
+    <div id="buy">
+        <button type="button" @onclick="AddToBasket">buy for &euro; @_price</button>
+    </div>
+}

@@ -31,6 +31,10 @@ To start the project, run the following command:
 ```bash
 dotnet run --project Server
 ```
+Or if you want to run it in docker, you can run this command:
+```
+docker build -t microfrontendsdemo -f Server/Dockerfile . && docker run -p 5068:80 --rm -it microfrontendsdemo
+```
 After that, the project can be accessed at http://localhost:5068
 
 ## In depth explanation

@@ -1,0 +1,10 @@
+﻿<div id="reco">
+    <h4>Related Products</h4>
+    @if (_loaded && _recommendation != null)
+    {
+        @foreach (var image in _recommendation.AsEnumerable())
+        {
+            <img src="/assets/img/@image" />
+        }
+    }
+</div>

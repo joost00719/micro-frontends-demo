@@ -1,0 +1,17 @@
+﻿@media only screen and (min-width: 1000px) {
+    #reco {
+        justify-content: stretch;
+        text-align: center;
+        width: 100%;
+    }
+}
+
+#reco h3 {
+    font-weight: 400;
+}
+
+#reco img {
+    display: inline-block;
+    height: 180px;
+    width: 180px;
+}

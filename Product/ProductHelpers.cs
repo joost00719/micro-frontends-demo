@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Product.Data;
+using Related;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace Product
         public static IServiceCollection AddProductUI(this IServiceCollection services)
         {
             services.AddScoped<ITractorApiClient, TractorApiClient>();
+            services.AddRelatedUI();
 
             return services;
         }

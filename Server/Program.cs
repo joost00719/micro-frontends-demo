@@ -1,40 +1,51 @@
 
-using RoboPharma.Web.Blazor.Components.Helpers;
+using RPBlazorPluginManager;
 
 namespace Server
 {
     public class Program
     {
-        public static void Main(string[] args)
+        private static WebApplication _app;
+
+        public static async Task Main(string[] args)
         {
+            await RunServerAsync(args);
+        }
+
+        private static async Task RunServerAsync(string[] args)
+        {
+            var pluginLoader = new PluginLoader(@"C:\Users\jroza\source\repos\micro-frontends-demo\StandAloneService\bin\Debug");
+
             var builder = WebApplication.CreateBuilder(args);
+
+            await pluginLoader.LoadPlugins(builder.Services);
+
+            builder.Services.AddSingleton(services => pluginLoader);
 
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
 
-            builder.Services.AddRPComponents();
-
-            var app = builder.Build();
+            _app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
+            if (!_app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Error");
+                _app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                _app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            _app.UseHttpsRedirection();
 
-            app.UseStaticFiles();
+            _app.UseStaticFiles();
 
-            app.UseRouting();
+            _app.UseRouting();
 
-            app.MapBlazorHub();
-            app.MapFallbackToPage("/_Host");
+            _app.MapBlazorHub();
+            _app.MapFallbackToPage("/_Host");
 
-            app.Run();
+            _app.Run();
         }
     }
 }

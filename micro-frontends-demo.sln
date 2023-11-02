@@ -11,11 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPBlazorPluginManager", "RPBlazorPluginManager\RPBlazorPluginManager.csproj", "{D770DABD-9ED0-4F14-9B8F-BBA60F36A669}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RPBlazorPluginManager", "RPBlazorPluginManager\RPBlazorPluginManager.csproj", "{D770DABD-9ED0-4F14-9B8F-BBA60F36A669}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandAloneService", "StandAloneService\StandAloneService.csproj", "{0ED5EA94-9739-4A18-85AE-55471BBB11D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StandAloneService", "StandAloneService\StandAloneService.csproj", "{0ED5EA94-9739-4A18-85AE-55471BBB11D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{0B7A33FB-2BC1-4A44-AC1C-BEE863D52784}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{0B7A33FB-2BC1-4A44-AC1C-BEE863D52784}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

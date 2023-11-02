@@ -1,13 +1,42 @@
 ﻿namespace Shared
 {
-    public interface IPlugin
+    public abstract class AbstractPlugin
     {
-        public List<string> Scripts { get; }
+        public AbstractPlugin(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+        {
+        }
 
-        public List<string> StyleSheets { get; }
+        public List<string> Scripts { get; } = new List<string>();
+
+        public List<string> StyleSheets { get; } = new List<string>();
 
         public string Name { get; }
 
-        public static abstract IPlugin CreateInstance();
+        public List<IPluginPageRegistration> Pages { get; } = new List<IPluginPageRegistration>();
+    }
+
+    public interface IPluginPageRegistration
+    {
+        public string GetPageName(string culture);
+
+        public string PagePath { get; }
+    }
+
+    public class DefaultPluginPageRegistration : IPluginPageRegistration
+    {
+        public DefaultPluginPageRegistration(string pagePath, string pageName)
+        {
+            PagePath = pagePath;
+            PageName = pageName;
+        }
+
+        public string PagePath { get; }
+
+        public string PageName { get; }
+
+        public string GetPageName(string culture)
+        {
+            return PageName;
+        }
     }
 }

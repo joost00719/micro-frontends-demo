@@ -1,10 +1,12 @@
 
+using Microsoft.Extensions.FileProviders;
 using RPBlazorPluginManager;
 
 namespace Server
 {
     public class Program
     {
+        private const string nugetPackageTestPath = @"C:\Users\Joost\source\repos\micro-frontends-demo\StandAloneService\bin\Debug\StandAloneService.1.0.0.nupkg";
         private static WebApplication _app;
 
         public static async Task Main(string[] args)
@@ -14,11 +16,13 @@ namespace Server
 
         private static async Task RunServerAsync(string[] args)
         {
-            var pluginLoader = new PluginLoader(@"C:\Users\jroza\source\repos\micro-frontends-demo\StandAloneService\bin\Debug");
-
             var builder = WebApplication.CreateBuilder(args);
 
-            await pluginLoader.LoadPlugins(builder.Services);
+            var pluginLoader = new PluginLoader(builder.Environment.WebRootPath);
+
+
+            await pluginLoader.LoadPlugin(builder.Services,
+                new System.IO.Compression.ZipArchive(File.Open(nugetPackageTestPath, FileMode.Open)));
 
             builder.Services.AddSingleton(services => pluginLoader);
 

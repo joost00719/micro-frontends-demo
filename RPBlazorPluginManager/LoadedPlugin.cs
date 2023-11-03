@@ -17,6 +17,11 @@ namespace RPBlazorPluginManager
         }
 
         public AbstractPlugin Plugin { get; }
+
         public Assembly Assembly { get; }
+
+        public List<string> JS { get; set; } = new List<string>();
+
+        public List<string> CSS { get; set; } = new List<string>();
     }
 }

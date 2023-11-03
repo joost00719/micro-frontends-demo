@@ -13,7 +13,10 @@ namespace StandAloneService
         public PluginDescription(IServiceCollection services)
             : base(services)
         {
-            StyleSheets.Add("/_content/StandAloneService/css/color-theme.css");
+    //< link href = "RoboPharma.Web.Demo.Server.styles.css" rel = "stylesheet" />
+
+            // TODO: Figure out which css file to add
+            StyleSheets.Add("StandAloneService.styles.css");
         }
     }
 }

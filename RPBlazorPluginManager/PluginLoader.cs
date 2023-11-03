@@ -5,7 +5,7 @@ namespace RPBlazorPluginManager
 {
     public class PluginLoader
     {
-        public IEnumerable<LoadedPlugin> LoadedPlugins => _loadedPlugins;
+        public IReadOnlyCollection<LoadedPlugin> LoadedPlugins => _loadedPlugins.AsReadOnly();
 
         private List<LoadedPlugin> _loadedPlugins = new List<LoadedPlugin>();
 

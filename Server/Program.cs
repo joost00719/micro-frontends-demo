@@ -22,6 +22,8 @@ namespace Server
 
             builder.Services.AddSingleton(services => pluginLoader);
 
+            builder.Services.AddScoped<DocumentObjectModelInterop>();
+
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();

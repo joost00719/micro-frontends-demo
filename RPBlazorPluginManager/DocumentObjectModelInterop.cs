@@ -27,7 +27,7 @@ namespace RPBlazorPluginManager
         /// <returns>A task which can be awaited.</returns>
         public async Task IncludeStylesheet(string href)
         {
-            throw new NotImplementedException();
+            await _jsRuntime.InvokeVoidAsync("includeStylesheet", href);
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace RPBlazorPluginManager
         /// <returns>A task which can be awaited</returns>
         public async Task IncludeScript(string src)
         {
-            throw new NotImplementedException();
+            await _jsRuntime.InvokeVoidAsync("includeScript", src);
         }
     }
 }

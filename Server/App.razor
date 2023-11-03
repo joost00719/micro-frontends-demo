@@ -1,4 +1,6 @@
-﻿<Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="assemblies">
+﻿@using Microsoft.AspNetCore.Components.Web
+@using RPBlazorPluginManager;
+<Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="assemblies">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -11,15 +13,46 @@
     </NotFound>
 </Router>
 
+
 @code {
     [Inject]
-    private RPBlazorPluginManager.PluginLoader pluginLoader { get; set; }
+    private PluginLoader pluginLoader { get; set; }
+
+    [Inject]
+    private DocumentObjectModelInterop domInertop { get; set; }
+
     private System.Reflection.Assembly[] assemblies;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         assemblies = pluginLoader.LoadedPlugins.Select(x => x.Assembly).ToArray();
 
         base.OnInitialized();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            foreach (var plugin in pluginLoader.LoadedPlugins)
+            {
+                await IncludeAsync(plugin.Plugin);
+            }
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task IncludeAsync(global::Shared.AbstractPlugin plugin)
+    {
+        foreach (var styleSheet in plugin.StyleSheets)
+        {
+            await domInertop.IncludeStylesheet(styleSheet);
+        }
+
+        foreach (var script in plugin.Scripts)
+        {
+            await domInertop.IncludeScript(script);
+        }
     }
 }

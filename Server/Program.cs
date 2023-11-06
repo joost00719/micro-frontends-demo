@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.FileProviders;
 using RPBlazorPluginManager;
 
@@ -18,15 +19,17 @@ namespace Server
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var pluginLoader = new PluginLoader(builder.Environment.WebRootPath);
+            var pluginLoader = new PackageRepository(builder.Environment.WebRootPath);
 
 
-            await pluginLoader.LoadPlugin(builder.Services,
+            await pluginLoader.SavePackage(builder.Services,
                 new System.IO.Compression.ZipArchive(File.Open(nugetPackageTestPath, FileMode.Open)));
 
             builder.Services.AddSingleton(services => pluginLoader);
 
             builder.Services.AddScoped<DocumentObjectModelInterop>();
+            builder.Services.AddHttpClient<AssetLoader>((sp, client) => client.BaseAddress = new Uri(sp.GetRequiredService<NavigationManager>().BaseUri));
+            builder.Services.AddTransient<AssetLoader>();
 
             // Add services to the container.
             builder.Services.AddRazorPages();
@@ -45,6 +48,10 @@ namespace Server
             _app.UseHttpsRedirection();
 
             _app.UseStaticFiles();
+            _app.UseStaticFiles(new StaticFileOptions
+            {
+                ServeUnknownFileTypes = true // serve extensionless files
+            });
 
             _app.UseRouting();
 
@@ -53,5 +60,6 @@ namespace Server
 
             _app.Run();
         }
-    }
-}
+   
+}}  
+//           

@@ -10,8 +10,6 @@
 
         public List<string> StyleSheets { get; } = new List<string>();
 
-        public string Name { get; }
-
         public List<IPluginPageRegistration> Pages { get; } = new List<IPluginPageRegistration>();
     }
 

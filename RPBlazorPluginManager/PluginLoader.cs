@@ -1,24 +1,26 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Shared;
 using System.IO.Compression;
 using System.Xml;
 
 namespace RPBlazorPluginManager
 {
-    public class PluginLoader
+    public class PackageRepository
     {
         public IReadOnlyCollection<LoadedPlugin> LoadedPlugins => _loadedPlugins.AsReadOnly();
 
         private List<LoadedPlugin> _loadedPlugins = new List<LoadedPlugin>();
 
-        private readonly string pluginFolderPath;
+        private readonly string _wwwRootPath;
 
-        public PluginLoader(string wwwrootFolder)
+        public PackageRepository(string wwwrootFolder)
         {
-            this.pluginFolderPath = wwwrootFolder;
+            this._wwwRootPath = wwwrootFolder;
         }
 
-        public async Task<LoadedPlugin> LoadPlugin(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ZipArchive nugetPackage, bool disposeZip = true)
+        public async Task<LoadedPlugin> SavePackage(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ZipArchive nugetPackage, bool disposeZip = true)
         {
             try
             {
@@ -49,7 +51,7 @@ namespace RPBlazorPluginManager
                     var loadedPlugin = new LoadedPlugin(plugin, assembly);
                     _loadedPlugins.Add(loadedPlugin);
 
-                    await SaveNuget(nugetPackage, Path.Combine(pluginFolderPath, "live-plugins"), loadedPlugin);
+                    await SaveAssets(nugetPackage, loadedPlugin);
 
                     return loadedPlugin;
                 }
@@ -67,31 +69,36 @@ namespace RPBlazorPluginManager
             }
         }
 
-        private async Task SaveNuget(ZipArchive archive, string folder, LoadedPlugin plugin)
+        private async Task SaveAssets(ZipArchive archive, LoadedPlugin plugin)
         {
-            Directory.CreateDirectory(folder);
+            var dir = Path.Combine(_wwwRootPath, "plugins", plugin.Name);
+            Directory.CreateDirectory(dir);
 
             var validFormats = new string[] { ".dll", ".pdb", ".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".json", ".txt", ".csv" };
 
-            // Read all 
+            // Read all
+            var assetsFile = archive.Entries.Single(entry => entry.Name.Contains("Microsoft.AspNetCore.StaticWebAssets.props"));
+            ProcessProperties(assetsFile, plugin);
+
             foreach (ZipArchiveEntry entry in archive.Entries)
             {
                 if (validFormats.Contains(Path.GetExtension(entry.Name))
-                    /*|| entry.Name == "Microsoft.AspNetCore.StaticWebAssets.props"*/) // Static content specification
+                    || entry.Name == "Microsoft.AspNetCore.StaticWebAssets.props") // Static content specification
                 {
-                    string path = Path.Combine(folder, entry.Name);
+                    string path = Path.Combine(dir, entry.Name);
                     using Stream zipStream = entry.Open();
                     using FileStream fileStream = new FileStream(path, FileMode.Create);
                     await zipStream.CopyToAsync(fileStream);
                 }
-
-                if (entry.Name == "Microsoft.AspNetCore.StaticWebAssets.props")
-                {
-                    ProcessProperties(entry, plugin);
-                }
             }
         }
 
+        /// <summary>
+        /// Returns the base-path of the plugin
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <param name="plugin"></param>
+        /// <returns></returns>
         private void ProcessProperties(ZipArchiveEntry entry, LoadedPlugin plugin)
         {
             string xmlStr;
@@ -105,17 +112,13 @@ namespace RPBlazorPluginManager
             var assetsList = new XmlDocument();
             assetsList.LoadXml(xmlStr);
 
-            foreach (XmlNode asset in assetsList.GetElementsByTagName("StaticWebAsset"))
+            foreach (XmlNode assetXml in assetsList.GetElementsByTagName("StaticWebAsset"))
             {
-                var content = asset.SelectSingleNode("RelativePath")?.InnerText!;
-                if (content.EndsWith(".js"))
-                {
-                    plugin.JS.Add(content);
-                }
-                else if (content.EndsWith(".css"))
-                {
-                    plugin.CSS.Add(content);
-                }
+                // node to PluginAsset
+                var json = JsonConvert.SerializeXmlNode(assetXml, Newtonsoft.Json.Formatting.Indented);
+                var asset = JsonConvert.DeserializeAnonymousType(json, new { StaticWebAsset = new PluginAsset() }).StaticWebAsset;
+
+                plugin.Assets.Add(asset);
             }
 
             // TODO: Make the path relative to the plugin folder

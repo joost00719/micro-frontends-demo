@@ -16,10 +16,16 @@
 
 @code {
     [Inject]
-    private PluginLoader pluginLoader { get; set; }
+    private AssetLoader assetLoader { get; set; }
+
+    [Inject]
+    private RPBlazorPluginManager.PackageRepository pluginLoader { get; set; }
 
     [Inject]
     private DocumentObjectModelInterop domInertop { get; set; }
+
+    [Inject]
+    private NavigationManager navigationManager { get; set; }
 
     private System.Reflection.Assembly[] assemblies;
 
@@ -34,25 +40,26 @@
     {
         if (firstRender)
         {
-            foreach (var plugin in pluginLoader.LoadedPlugins)
-            {
-                // await IncludeAsync(plugin.Plugin);
-            }
+            await assetLoader.LoadAssets(navigationManager.BaseUri);
         }
 
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private async Task IncludeAsync(global::Shared.AbstractPlugin plugin)
+    private async Task IncludeAsync(global::RPBlazorPluginManager.LoadedPlugin plugin)
     {
-        foreach (var styleSheet in plugin.StyleSheets)
-        {
-            await domInertop.IncludeStylesheet(styleSheet);
-        }
+        // await this.pluginLoader.LoadAssets(domInertop);
 
-        foreach (var script in plugin.Scripts)
-        {
-            await domInertop.IncludeScript(script);
-        }
+
+        // await domInertop.LoadPlugingAssets(plugin.Name);
+        // foreach (var styleSheet in plugin.StyleSheets)
+        // {
+        //     await domInertop.IncludeStylesheet(styleSheet);
+        // }
+
+        // foreach (var script in plugin.Scripts)
+        // {
+        //     await domInertop.IncludeScript(script);
+        // }
     }
 }

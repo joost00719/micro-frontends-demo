@@ -20,5 +20,5 @@ window.includeScript = function (jsPath) {
     script.src = jsPath;
     body.appendChild(script);
 
-console.log("script added: " + jsPath);
+    console.log("script added: " + jsPath);
 }

@@ -30,7 +30,7 @@ namespace RPBlazorPluginManager
 
         public async Task LoadAssets(string baseUrl, LoadedPlugin plugin)
         {
-            var url = $"{baseUrl}/plugins/{plugin.Name}/Microsoft.AspNetCore.StaticWebAssets.props";
+            var url = $"{baseUrl}/plugins/{plugin.Name}/assets.xml";
             var stream3 = await httpClient.GetStreamAsync(url);
 
             XmlDocument assetsList = new XmlDocument();

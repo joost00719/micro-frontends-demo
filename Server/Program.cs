@@ -50,6 +50,8 @@ namespace Server
             _app.UseStaticFiles();
             _app.UseStaticFiles(new StaticFileOptions
             {
+                RequestPath = "/_content/Server",
+                FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.WebRootPath)),
                 ServeUnknownFileTypes = true // serve extensionless files
             });
 
@@ -60,6 +62,6 @@ namespace Server
 
             _app.Run();
         }
-   
-}}  
+    }
+}
 //           

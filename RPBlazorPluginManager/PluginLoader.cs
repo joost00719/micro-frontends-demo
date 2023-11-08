@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting.Internal;
 using Newtonsoft.Json;
 using Shared;
 using System.IO.Compression;
@@ -53,6 +54,10 @@ namespace RPBlazorPluginManager
 
                     await SaveAssets(nugetPackage, loadedPlugin);
 
+                    if (false)
+                    {
+                    }
+
                     return loadedPlugin;
                 }
             }
@@ -85,7 +90,7 @@ namespace RPBlazorPluginManager
                 if (validFormats.Contains(Path.GetExtension(entry.Name))
                     || entry.Name == "Microsoft.AspNetCore.StaticWebAssets.props") // Static content specification
                 {
-                    string path = Path.Combine(dir, entry.Name);
+                    string path = Path.Combine(dir, entry.Name == "Microsoft.AspNetCore.StaticWebAssets.props" ? "assets.xml" : entry.Name);
                     using Stream zipStream = entry.Open();
                     using FileStream fileStream = new FileStream(path, FileMode.Create);
                     await zipStream.CopyToAsync(fileStream);

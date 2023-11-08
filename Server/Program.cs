@@ -19,18 +19,11 @@ namespace Server
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var pluginLoader = new PackageRepository(builder.Environment.WebRootPath);
-            await pluginLoader.Clean();
-
-
-            await pluginLoader.SavePackage(builder.Services,
-                new System.IO.Compression.ZipArchive(File.Open(nugetPackageTestPath, FileMode.Open)));
-
-            builder.Services.AddSingleton(services => pluginLoader);
-
-            builder.Services.AddScoped<DocumentObjectModelInterop>();
-            builder.Services.AddHttpClient<AssetLoader>((sp, client) => client.BaseAddress = new Uri(sp.GetRequiredService<NavigationManager>().BaseUri));
-            builder.Services.AddTransient<AssetLoader>();
+            builder.Services.AddPlugins(new PluginManagerSettings
+            {
+                PackedPluginsFolderPath = @"C:\Users\Joost\source\repos\micro-frontends-demo\StandAloneService\bin\Debug",
+                WWWRootFolderPath = builder.Environment.WebRootPath!
+            });
 
             // Add services to the container.
             builder.Services.AddRazorPages();

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace RPBlazorPluginManager
 {
-    public class LoadedPlugin
+    public class PluginInfo
     {
-        public LoadedPlugin(AbstractPlugin plugin, Assembly assembly)
+        public PluginInfo(AbstractPlugin plugin, Assembly assembly)
         {
             Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin));
             Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));

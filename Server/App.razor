@@ -16,22 +16,13 @@
 
 @code {
     [Inject]
-    private AssetLoader assetLoader { get; set; }
-
-    [Inject]
-    private RPBlazorPluginManager.PackageRepository pluginLoader { get; set; }
-
-    [Inject]
-    private DocumentObjectModelInterop domInertop { get; set; }
-
-    [Inject]
-    private NavigationManager navigationManager { get; set; }
+    private PluginAssetLoader assetLoader { get; set; }
 
     private System.Reflection.Assembly[] assemblies;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        assemblies = pluginLoader.LoadedPlugins.Select(x => x.Assembly).ToArray();
+        assemblies = assetLoader.GetLoadedAssemblies();
 
         base.OnInitialized();
     }
@@ -40,26 +31,9 @@
     {
         if (firstRender)
         {
-            await assetLoader.LoadAssets(navigationManager.BaseUri);
+            await assetLoader.LoadAssets();
         }
 
         await base.OnAfterRenderAsync(firstRender);
-    }
-
-    private async Task IncludeAsync(global::RPBlazorPluginManager.LoadedPlugin plugin)
-    {
-        // await this.pluginLoader.LoadAssets(domInertop);
-
-
-        // await domInertop.LoadPlugingAssets(plugin.Name);
-        // foreach (var styleSheet in plugin.StyleSheets)
-        // {
-        //     await domInertop.IncludeStylesheet(styleSheet);
-        // }
-
-        // foreach (var script in plugin.Scripts)
-        // {
-        //     await domInertop.IncludeScript(script);
-        // }
     }
 }

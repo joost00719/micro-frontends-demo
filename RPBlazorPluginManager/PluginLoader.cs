@@ -10,9 +10,9 @@ namespace RPBlazorPluginManager
 {
     public class PackageRepository
     {
-        public IReadOnlyCollection<LoadedPlugin> LoadedPlugins => _loadedPlugins.AsReadOnly();
+        public IReadOnlyCollection<PluginInfo> LoadedPlugins => _loadedPlugins.AsReadOnly();
 
-        private List<LoadedPlugin> _loadedPlugins = new List<LoadedPlugin>();
+        private List<PluginInfo> _loadedPlugins = new List<PluginInfo>();
 
         private readonly string _wwwRootPath;
 
@@ -25,7 +25,7 @@ namespace RPBlazorPluginManager
             this._wwwRootPath = wwwrootFolder;
         }
 
-        public async Task Clean()
+        public void Clean()
         {
             var path = Path.Combine(_wwwRootPath, "plugins");
             if (Directory.Exists(path))
@@ -34,7 +34,7 @@ namespace RPBlazorPluginManager
             }
         }
 
-        public async Task<LoadedPlugin> SavePackage(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ZipArchive nugetPackage, bool disposeZip = true)
+        public PluginInfo SavePackage(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ZipArchive nugetPackage, bool disposeZip = true)
         {
             try
             {
@@ -47,7 +47,7 @@ namespace RPBlazorPluginManager
                 using (var fs = dllEntry.Open())
                 using (var ms = new System.IO.MemoryStream())
                 {
-                    await fs.CopyToAsync(ms);
+                    fs.CopyTo(ms);
                     ms.Position = 0;
                     var bytes = ms.ToArray();
                     var assembly = System.Reflection.Assembly.Load(bytes);
@@ -62,10 +62,10 @@ namespace RPBlazorPluginManager
                     var createMethod = pluginType.GetConstructor(new Type[] { typeof(IServiceCollection) })!;
                     var plugin = (AbstractPlugin)createMethod.Invoke(new[] { services })!;
 
-                    var loadedPlugin = new LoadedPlugin(plugin, assembly);
+                    var loadedPlugin = new PluginInfo(plugin, assembly);
                     _loadedPlugins.Add(loadedPlugin);
 
-                    await SaveAssets(nugetPackage, loadedPlugin);
+                    SaveAssets(nugetPackage, loadedPlugin);
 
                     if (false)
                     {
@@ -87,7 +87,7 @@ namespace RPBlazorPluginManager
             }
         }
 
-        private async Task SaveAssets(ZipArchive archive, LoadedPlugin plugin)
+        private void SaveAssets(ZipArchive archive, PluginInfo plugin)
         {
             var dir = Path.Combine(_wwwRootPath, "plugins", plugin.Name);
             Directory.CreateDirectory(dir);
@@ -106,7 +106,7 @@ namespace RPBlazorPluginManager
                     string path = Path.Combine(dir, entry.Name == "Microsoft.AspNetCore.StaticWebAssets.props" ? "assets.xml" : entry.Name);
                     using Stream zipStream = entry.Open();
                     using FileStream fileStream = new FileStream(path, FileMode.Create);
-                    await zipStream.CopyToAsync(fileStream);
+                    zipStream.CopyTo(fileStream);
                 }
             }
         }
@@ -117,7 +117,7 @@ namespace RPBlazorPluginManager
         /// <param name="entry"></param>
         /// <param name="plugin"></param>
         /// <returns></returns>
-        private void ProcessProperties(ZipArchiveEntry entry, LoadedPlugin plugin)
+        private void ProcessProperties(ZipArchiveEntry entry, PluginInfo plugin)
         {
             string xmlStr;
             // Read the file to string

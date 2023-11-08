@@ -1,36 +1,45 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
 namespace RPBlazorPluginManager
 {
-    public class AssetLoader
+    public class PluginAssetLoader
     {
         private readonly PackageRepository packageRepo;
         private HttpClient httpClient;
         private DocumentObjectModelInterop domInterop;
+        private readonly NavigationManager navigationManager;
 
-        public AssetLoader(PackageRepository packageRepo, HttpClient httpClient, DocumentObjectModelInterop domInterop)
+        public PluginAssetLoader(PackageRepository packageRepo, HttpClient httpClient, DocumentObjectModelInterop domInterop, NavigationManager navigationManager)
         {
             this.packageRepo = packageRepo;
             this.httpClient = httpClient;
             this.domInterop = domInterop;
+            this.navigationManager = navigationManager;
         }
 
-        public async Task LoadAssets(string baseUrl)
+        public Assembly[] GetLoadedAssemblies()
+        {
+            return packageRepo.LoadedPlugins.Select(p => p.Assembly).ToArray();
+        }
+
+        public async Task LoadAssets()
         {
             foreach (var plugin in packageRepo.LoadedPlugins)
             {
-                await LoadAssets(baseUrl, plugin);
+                await LoadAssets(plugin);
             }
         }
 
-        public async Task LoadAssets(string baseUrl, LoadedPlugin plugin)
+        public async Task LoadAssets(PluginInfo plugin)
         {
-            var url = $"{baseUrl}/plugins/{plugin.Name}/assets.xml";
+            var url = $"{navigationManager.BaseUri}/plugins/{plugin.Name}/assets.xml";
             var stream3 = await httpClient.GetStreamAsync(url);
 
             XmlDocument assetsList = new XmlDocument();

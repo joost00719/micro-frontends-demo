@@ -20,6 +20,7 @@ namespace Server
             var builder = WebApplication.CreateBuilder(args);
 
             var pluginLoader = new PackageRepository(builder.Environment.WebRootPath);
+            await pluginLoader.Clean();
 
 
             await pluginLoader.SavePackage(builder.Services,

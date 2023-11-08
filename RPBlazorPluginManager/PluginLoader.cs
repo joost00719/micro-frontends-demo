@@ -16,9 +16,22 @@ namespace RPBlazorPluginManager
 
         private readonly string _wwwRootPath;
 
+        private string GetPluginPath(string pluginName) => Path.Combine(GetPluginBasePath(), pluginName);
+
+        private string GetPluginBasePath() => Path.Combine(_wwwRootPath, "plugins");
+
         public PackageRepository(string wwwrootFolder)
         {
             this._wwwRootPath = wwwrootFolder;
+        }
+
+        public async Task Clean()
+        {
+            var path = Path.Combine(_wwwRootPath, "plugins");
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
         }
 
         public async Task<LoadedPlugin> SavePackage(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ZipArchive nugetPackage, bool disposeZip = true)

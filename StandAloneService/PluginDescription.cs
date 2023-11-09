@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RPBlazorPlugin.Core;
+using Shared;
 
 namespace StandAloneService
 {
@@ -14,6 +15,8 @@ namespace StandAloneService
             StyleSheets.Add("StandAloneService.styles.css");
 
             Pages.Add(new DefaultPluginPageInfo("TestPage", "Test pagina"));
+
+            services.AddSingleton<CounterService>();
         }
     }
 }

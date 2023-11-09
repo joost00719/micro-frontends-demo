@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Shared;
+using RPBlazorPlugin.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace StandAloneService
 {
-    public class PluginDescription : AbstractPlugin
+    public class PluginDescription : PluginDefinition
     {
         public PluginDescription(IServiceCollection services)
             : base(services)

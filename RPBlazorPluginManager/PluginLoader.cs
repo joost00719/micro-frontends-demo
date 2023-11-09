@@ -2,11 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
 using Newtonsoft.Json;
-using Shared;
+using RPBlazorPlugin.Core;
 using System.IO.Compression;
 using System.Xml;
 
-namespace RPBlazorPluginManager
+namespace RPBlazorPlugin.Loader
 {
     public class PackageRepository
     {
@@ -52,15 +52,15 @@ namespace RPBlazorPluginManager
                     var bytes = ms.ToArray();
                     var assembly = System.Reflection.Assembly.Load(bytes);
                     var types = assembly.GetTypes();
-                    var pluginType = types.SingleOrDefault(t => typeof(Shared.AbstractPlugin).IsAssignableFrom(t));
+                    var pluginType = types.SingleOrDefault(t => typeof(PluginDefinition).IsAssignableFrom(t));
                     if (pluginType == null)
                     {
-                        var msg = $"No valid entry point found in nuget package. Missing implementation of abstract type '{typeof(AbstractPlugin)}'";
+                        var msg = $"No valid entry point found in nuget package. Missing implementation of abstract type '{typeof(PluginDefinition)}'";
                         throw new InvalidOperationException(msg);
                     }
 
                     var createMethod = pluginType.GetConstructor(new Type[] { typeof(IServiceCollection) })!;
-                    var plugin = (AbstractPlugin)createMethod.Invoke(new[] { services })!;
+                    var plugin = (PluginDefinition)createMethod.Invoke(new[] { services })!;
 
                     var loadedPlugin = new PluginInfo(plugin, assembly);
                     _loadedPlugins.Add(loadedPlugin);

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPBlazorPluginManager
+namespace RPBlazorPlugin.Loader
 {
     /// <summary>
     /// DOM interop

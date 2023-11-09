@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace RPBlazorPluginManager
+namespace RPBlazorPlugin.Loader
 {
     public static class RPBlazorPluginManagerHelper
     {

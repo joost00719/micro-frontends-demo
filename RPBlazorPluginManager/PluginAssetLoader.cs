@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace RPBlazorPluginManager
+namespace RPBlazorPlugin.Loader
 {
     public class PluginAssetLoader
     {

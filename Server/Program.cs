@@ -1,7 +1,6 @@
-
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.FileProviders;
-using RPBlazorPluginManager;
+using RPBlazorPlugin.Loader;
 
 namespace Server
 {

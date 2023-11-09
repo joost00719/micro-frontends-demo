@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting.Internal;
-using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RPBlazorPlugin.Core;
 using System.IO.Compression;
-using System.Xml;
 
 namespace RPBlazorPlugin.Loader
 {

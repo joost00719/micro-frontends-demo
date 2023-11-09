@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.FileProviders;
 using RPBlazorPlugin.Loader;
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using RPBlazorPlugin.Core;
 using System.Reflection;
 using System.Xml;
 
@@ -22,6 +23,11 @@ namespace RPBlazorPlugin.Loader
         public Assembly[] GetLoadedAssemblies()
         {
             return packageRepo.LoadedPlugins.Select(p => p.Assembly).ToArray();
+        }
+
+        public List<IPluginPageInfo> GetPluginPages()
+        {
+            return packageRepo.LoadedPlugins.SelectMany(x => x.Plugin.Pages).ToList();
         }
 
         public async Task LoadAssets()

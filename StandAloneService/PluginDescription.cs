@@ -12,6 +12,8 @@ namespace StandAloneService
 
             // TODO: Figure out which css file to add
             StyleSheets.Add("StandAloneService.styles.css");
+
+            Pages.Add(new DefaultPluginPageInfo("TestPage", "Test pagina"));
         }
     }
 }

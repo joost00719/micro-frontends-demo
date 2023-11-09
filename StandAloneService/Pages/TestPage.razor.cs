@@ -9,14 +9,11 @@ namespace StandAloneService.Pages
 {
     public partial class TestPage
     {
-        public TestPage()
+        private int _count;
+
+        void button_pressed()
         {
-
-        }
-
-        void test()
-        {
-
+            _count++;
         }
     }
 }

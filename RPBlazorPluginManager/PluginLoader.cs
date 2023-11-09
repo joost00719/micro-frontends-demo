@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RPBlazorPlugin.Core;
+using System.Collections.Generic;
 using System.IO.Compression;
+using System.Reflection;
 
 namespace RPBlazorPlugin.Loader
 {
@@ -31,6 +33,67 @@ namespace RPBlazorPlugin.Loader
         }
 
         public PluginInfo SavePackage(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ZipArchive nugetPackage, bool disposeZip = true)
+        {
+            try
+            {
+                ConstructorInfo? createMethod = null;
+                Assembly? createAssembly = null;
+
+                List<(Assembly asm, byte[] bytes)> references = new List<(Assembly asm, byte[] bytes)>();
+
+                var dlls = nugetPackage.Entries.Where(e => e.Name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)).ToList();
+
+                foreach (var dllEntry in dlls)
+                {
+                    using (var fs = dllEntry.Open())
+                    using (var ms = new System.IO.MemoryStream())
+                    {
+                        fs.CopyTo(ms);
+                        ms.Position = 0;
+                        var bytes = ms.ToArray();
+                        var assembly = System.Reflection.Assembly.Load(bytes);
+                        var types = assembly.GetTypes();
+                        var pluginType = types.SingleOrDefault(t => typeof(PluginDefinition).IsAssignableFrom(t));
+                        if (pluginType != null)
+                        {
+                            createMethod = pluginType.GetConstructor(new Type[] { typeof(IServiceCollection) })!;
+                            createAssembly = assembly;
+                        }
+                        else
+                        {
+                            //references.Add((assembly, bytes));
+                        }
+                    }
+                }
+
+                //foreach (var reference in references)
+                //{
+                //    createAssembly.(reference.asm.GetName().Name!, null, reference.bytes);
+                //}
+
+                var plugin = (PluginDefinition)createMethod.Invoke(new[] { services })!;
+
+                var loadedPlugin = new PluginInfo(plugin, createAssembly!);
+                _loadedPlugins.Add(loadedPlugin);
+
+                SaveAssets(nugetPackage, loadedPlugin);
+
+                return loadedPlugin;
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                if (disposeZip)
+                {
+                    nugetPackage?.Dispose();
+                }
+            }
+        }
+
+        public PluginInfo SavePackageOld(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ZipArchive nugetPackage, bool disposeZip = true)
         {
             try
             {

@@ -15,4 +15,7 @@
   <!--<files>
     <file src="bin\$configuration$\**\$id$.resources.dll" target="lib\net40" />
   </files>-->
+	<dependencies>
+		<dependency id="Shared" version="*" />
+	</dependencies>
 </package>

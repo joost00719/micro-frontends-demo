@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RPBlazorPluginManager\RPBlazorPlugin.Loader.csproj" />
-    <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
 </Project>

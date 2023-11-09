@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace RPBlazorPluginManager
 {
-
     public class PluginManagerSettings
     {
         public required string? WWWRootFolderPath { get; set; }

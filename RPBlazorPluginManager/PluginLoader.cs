@@ -94,10 +94,6 @@ namespace RPBlazorPluginManager
 
             var validFormats = new string[] { ".dll", ".pdb", ".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".json", ".txt", ".csv" };
 
-            // Read all
-            var assetsFile = archive.Entries.Single(entry => entry.Name.Contains("Microsoft.AspNetCore.StaticWebAssets.props"));
-            ProcessProperties(assetsFile, plugin);
-
             foreach (ZipArchiveEntry entry in archive.Entries)
             {
                 if (validFormats.Contains(Path.GetExtension(entry.Name))
@@ -109,40 +105,6 @@ namespace RPBlazorPluginManager
                     zipStream.CopyTo(fileStream);
                 }
             }
-        }
-
-        /// <summary>
-        /// Returns the base-path of the plugin
-        /// </summary>
-        /// <param name="entry"></param>
-        /// <param name="plugin"></param>
-        /// <returns></returns>
-        private void ProcessProperties(ZipArchiveEntry entry, PluginInfo plugin)
-        {
-            string xmlStr;
-            // Read the file to string
-            using (var stream = entry.Open())
-            using (var reader = new StreamReader(stream))
-            {
-                xmlStr = reader.ReadToEnd();
-            }
-
-            var assetsList = new XmlDocument();
-            assetsList.LoadXml(xmlStr);
-
-            foreach (XmlNode assetXml in assetsList.GetElementsByTagName("StaticWebAsset"))
-            {
-                // node to PluginAsset
-                var json = JsonConvert.SerializeXmlNode(assetXml, Newtonsoft.Json.Formatting.Indented);
-                var asset = JsonConvert.DeserializeAnonymousType(json, new { StaticWebAsset = new PluginAsset() }).StaticWebAsset;
-
-                plugin.Assets.Add(asset);
-            }
-
-            // TODO: Make the path relative to the plugin folder
-            // Load it in the app.razor file
-            // ???
-            // profit
         }
     }
 }

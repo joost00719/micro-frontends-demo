@@ -39,10 +39,5 @@ namespace RPBlazorPluginManager
         {
             await _jsRuntime.InvokeVoidAsync("includeScript", src);
         }
-
-        public async Task LoadPlugingAssets(string pluginName)
-        {
-            await _jsRuntime.InvokeVoidAsync("loadPluginAssets", pluginName);
-        }
     }
 }

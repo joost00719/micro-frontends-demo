@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace RPBlazorPlugin.Core
 {

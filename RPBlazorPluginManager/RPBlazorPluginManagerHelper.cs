@@ -26,7 +26,7 @@ namespace RPBlazorPlugin.Loader
 
             foreach (var package in packages)
             {
-                pluginLoader.SavePackage(services, new System.IO.Compression.ZipArchive(File.Open(package, FileMode.Open)));
+                pluginLoader.SavePackage(services, new FileInfo(package));
             }
 
             services.AddScoped<DocumentObjectModelInterop>();

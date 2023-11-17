@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using Microsoft.Extensions.DependencyInjection;
 using RPBlazorPlugin.Core;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.Loader;
 
 namespace RPBlazorPlugin.Loader
 {
@@ -18,9 +21,14 @@ namespace RPBlazorPlugin.Loader
 
         private string GetPluginBasePath() => Path.Combine(_wwwRootPath, "plugins");
 
+        private AssemblyLoadContext _dependancies = new AssemblyLoadContext("plugins", false);
+
         public PackageRepository(string wwwrootFolder)
         {
             this._wwwRootPath = wwwrootFolder;
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
+            _dependancies.LoadFromAssemblyName(typeof(PluginDefinition).Assembly.GetName());
         }
 
         public void Clean()
@@ -32,15 +40,20 @@ namespace RPBlazorPlugin.Loader
             }
         }
 
-        public PluginInfo SavePackage(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ZipArchive nugetPackage, bool disposeZip = true)
+        public PluginInfo SavePackage(Microsoft.Extensions.DependencyInjection.IServiceCollection services, FileInfo nugetFileInfo, bool disposeZip = true)
         {
+            if (!nugetFileInfo.Exists)
+            {
+                throw new ArgumentException($"File '{nugetFileInfo.FullName}' does not exist");
+            }
+
+            var nugetPackage = ZipFile.OpenRead(nugetFileInfo.FullName);
+            // var assemblies = new List<(string name, byte[] assembly)>(nugetPackage.Entries.Count);
+
+            ConstructorInfo? createMethod = null;
+            Assembly? createAssembly = null;
             try
             {
-                ConstructorInfo? createMethod = null;
-                Assembly? createAssembly = null;
-
-                List<(Assembly asm, byte[] bytes)> references = new List<(Assembly asm, byte[] bytes)>();
-
                 var dlls = nugetPackage.Entries.Where(e => e.Name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)).ToList();
 
                 foreach (var dllEntry in dlls)
@@ -51,25 +64,17 @@ namespace RPBlazorPlugin.Loader
                         fs.CopyTo(ms);
                         ms.Position = 0;
                         var bytes = ms.ToArray();
-                        var assembly = System.Reflection.Assembly.Load(bytes);
-                        var types = assembly.GetTypes();
-                        var pluginType = types.SingleOrDefault(t => typeof(PluginDefinition).IsAssignableFrom(t));
-                        if (pluginType != null)
+                        // assemblies.Add((dllEntry.Name, bytes));
+                        if (IsPluginAssembly(_dependancies.LoadFromStream(new MemoryStream(bytes))))
                         {
-                            createMethod = pluginType.GetConstructor(new Type[] { typeof(IServiceCollection) })!;
-                            createAssembly = assembly;
-                        }
-                        else
-                        {
-                            //references.Add((assembly, bytes));
+                            createAssembly = Assembly.Load(bytes);
+                            createMethod = createAssembly
+                                .GetTypes()
+                                .SingleOrDefault(x => x.IsAssignableTo(typeof(PluginDefinition)))!
+                                .GetConstructor(new[] { typeof(IServiceCollection) });
                         }
                     }
                 }
-
-                //foreach (var reference in references)
-                //{
-                //    createAssembly.(reference.asm.GetName().Name!, null, reference.bytes);
-                //}
 
                 var plugin = (PluginDefinition)createMethod.Invoke(new[] { services })!;
 
@@ -93,57 +98,23 @@ namespace RPBlazorPlugin.Loader
             }
         }
 
-        public PluginInfo SavePackageOld(Microsoft.Extensions.DependencyInjection.IServiceCollection services, ZipArchive nugetPackage, bool disposeZip = true)
+        private bool IsPluginAssembly(Assembly assembly)
         {
-            try
-            {
-                var dllEntry = nugetPackage.Entries.FirstOrDefault(e => e.Name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase));
-                if (dllEntry == null)
-                {
-                    throw new ArgumentException("No dll found in nuget package");
-                }
+            var types = assembly.GetTypes();
 
-                using (var fs = dllEntry.Open())
-                using (var ms = new System.IO.MemoryStream())
-                {
-                    fs.CopyTo(ms);
-                    ms.Position = 0;
-                    var bytes = ms.ToArray();
-                    var assembly = System.Reflection.Assembly.Load(bytes);
-                    var types = assembly.GetTypes();
-                    var pluginType = types.SingleOrDefault(t => typeof(PluginDefinition).IsAssignableFrom(t));
-                    if (pluginType == null)
-                    {
-                        var msg = $"No valid entry point found in nuget package. Missing implementation of abstract type '{typeof(PluginDefinition)}'";
-                        throw new InvalidOperationException(msg);
-                    }
+            // _dependancies.LoadFromAssemblyName(typeof(PluginDefinition).Assembly.GetName());
+            var name = typeof(PluginDefinition).Assembly.GetName().ToString();
+            var coreAsm = _dependancies.Assemblies.SingleOrDefault(x => x.GetName().ToString() == name);
+            var pluginSubType = coreAsm.GetType(typeof(PluginDefinition).FullName!)!;
+            // get all types of which the base class is of type PluginDefinition
+            var pluginType = types.FirstOrDefault(t => t.IsSubclassOf(pluginSubType));
 
-                    var createMethod = pluginType.GetConstructor(new Type[] { typeof(IServiceCollection) })!;
-                    var plugin = (PluginDefinition)createMethod.Invoke(new[] { services })!;
+            return pluginType != null;
+        }
 
-                    var loadedPlugin = new PluginInfo(plugin, assembly);
-                    _loadedPlugins.Add(loadedPlugin);
-
-                    SaveAssets(nugetPackage, loadedPlugin);
-
-                    if (false)
-                    {
-                    }
-
-                    return loadedPlugin;
-                }
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                if (disposeZip)
-                {
-                    nugetPackage?.Dispose();
-                }
-            }
+        private Assembly? CurrentDomain_AssemblyResolve(object? sender, ResolveEventArgs args)
+        {
+            return _dependancies.Assemblies.FirstOrDefault(asm => asm.GetName().ToString() == (args.Name));
         }
 
         private void SaveAssets(ZipArchive archive, PluginInfo plugin)

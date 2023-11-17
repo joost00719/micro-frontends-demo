@@ -11,24 +11,17 @@ namespace RPBlazorPlugin.Loader
 {
     public class PackageRepository
     {
-        public IReadOnlyCollection<PluginInfo> LoadedPlugins => _loadedPlugins.AsReadOnly();
-
-        private List<PluginInfo> _loadedPlugins = new List<PluginInfo>();
-
         private readonly string _wwwRootPath;
+        private List<PluginInfo> _loadedPlugins = new List<PluginInfo>();
+        private AssemblyLoadContext _dependencies = new AssemblyLoadContext("plugins", false);
 
-        private string GetPluginPath(string pluginName) => Path.Combine(GetPluginBasePath(), pluginName);
-
-        private string GetPluginBasePath() => Path.Combine(_wwwRootPath, "plugins");
-
-        private AssemblyLoadContext _dependancies = new AssemblyLoadContext("plugins", false);
+        public IReadOnlyCollection<PluginInfo> LoadedPlugins => _loadedPlugins.AsReadOnly();
 
         public PackageRepository(string wwwrootFolder)
         {
-            this._wwwRootPath = wwwrootFolder;
+            _wwwRootPath = wwwrootFolder;
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-
-            _dependancies.LoadFromAssemblyName(typeof(PluginDefinition).Assembly.GetName());
+            _dependencies.LoadFromAssemblyName(typeof(PluginDefinition).Assembly.GetName());
         }
 
         public void Clean()
@@ -40,20 +33,18 @@ namespace RPBlazorPlugin.Loader
             }
         }
 
-        public PluginInfo SavePackage(Microsoft.Extensions.DependencyInjection.IServiceCollection services, FileInfo nugetFileInfo, bool disposeZip = true)
+        public PluginInfo SavePackage(IServiceCollection services, FileInfo nugetFileInfo)
         {
             if (!nugetFileInfo.Exists)
             {
                 throw new ArgumentException($"File '{nugetFileInfo.FullName}' does not exist");
             }
 
-            var nugetPackage = ZipFile.OpenRead(nugetFileInfo.FullName);
-            // var assemblies = new List<(string name, byte[] assembly)>(nugetPackage.Entries.Count);
-
-            ConstructorInfo? createMethod = null;
-            Assembly? createAssembly = null;
-            try
+            using (var nugetPackage = ZipFile.OpenRead(nugetFileInfo.FullName))
             {
+                ConstructorInfo? createMethod = null;
+                Assembly? createAssembly = null;
+
                 var dlls = nugetPackage.Entries.Where(e => e.Name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)).ToList();
 
                 foreach (var dllEntry in dlls)
@@ -64,8 +55,7 @@ namespace RPBlazorPlugin.Loader
                         fs.CopyTo(ms);
                         ms.Position = 0;
                         var bytes = ms.ToArray();
-                        // assemblies.Add((dllEntry.Name, bytes));
-                        if (IsPluginAssembly(_dependancies.LoadFromStream(new MemoryStream(bytes))))
+                        if (IsPluginAssembly(_dependencies.LoadFromStream(new MemoryStream(bytes))))
                         {
                             createAssembly = Assembly.Load(bytes);
                             createMethod = createAssembly
@@ -85,28 +75,15 @@ namespace RPBlazorPlugin.Loader
 
                 return loadedPlugin;
             }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                if (disposeZip)
-                {
-                    nugetPackage?.Dispose();
-                }
-            }
         }
 
         private bool IsPluginAssembly(Assembly assembly)
         {
             var types = assembly.GetTypes();
 
-            // _dependancies.LoadFromAssemblyName(typeof(PluginDefinition).Assembly.GetName());
             var name = typeof(PluginDefinition).Assembly.GetName().ToString();
-            var coreAsm = _dependancies.Assemblies.SingleOrDefault(x => x.GetName().ToString() == name);
+            var coreAsm = _dependencies.Assemblies.SingleOrDefault(x => x.GetName().ToString() == name);
             var pluginSubType = coreAsm.GetType(typeof(PluginDefinition).FullName!)!;
-            // get all types of which the base class is of type PluginDefinition
             var pluginType = types.FirstOrDefault(t => t.IsSubclassOf(pluginSubType));
 
             return pluginType != null;
@@ -114,7 +91,7 @@ namespace RPBlazorPlugin.Loader
 
         private Assembly? CurrentDomain_AssemblyResolve(object? sender, ResolveEventArgs args)
         {
-            return _dependancies.Assemblies.FirstOrDefault(asm => asm.GetName().ToString() == (args.Name));
+            return _dependencies.Assemblies.FirstOrDefault(asm => asm.GetName().ToString() == args.Name);
         }
 
         private void SaveAssets(ZipArchive archive, PluginInfo plugin)
@@ -127,12 +104,14 @@ namespace RPBlazorPlugin.Loader
             foreach (ZipArchiveEntry entry in archive.Entries)
             {
                 if (validFormats.Contains(Path.GetExtension(entry.Name))
-                    || entry.Name == "Microsoft.AspNetCore.StaticWebAssets.props") // Static content specification
+                    || entry.Name == "Microsoft.AspNetCore.StaticWebAssets.props")
                 {
                     string path = Path.Combine(dir, entry.Name == "Microsoft.AspNetCore.StaticWebAssets.props" ? "assets.xml" : entry.Name);
-                    using Stream zipStream = entry.Open();
-                    using FileStream fileStream = new FileStream(path, FileMode.Create);
-                    zipStream.CopyTo(fileStream);
+                    using (Stream zipStream = entry.Open())
+                    using (FileStream fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        zipStream.CopyTo(fileStream);
+                    }
                 }
             }
         }

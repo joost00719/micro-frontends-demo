@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		plugin-mechanic.md = plugin-mechanic.md
 		readme.md = readme.md
 	EndProjectSection
 EndProject
@@ -18,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StandAloneService", "StandA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{0B7A33FB-2BC1-4A44-AC1C-BEE863D52784}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPBlazorPlugin.Core", "RPBlazorPlugin.Core\RPBlazorPlugin.Core.csproj", "{8495D294-7681-4329-81D4-2725F9B9A317}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RPBlazorPlugin.Core", "RPBlazorPlugin.Core\RPBlazorPlugin.Core.csproj", "{8495D294-7681-4329-81D4-2725F9B9A317}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

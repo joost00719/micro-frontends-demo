@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33801.468
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{722E6E77-D2F4-4E4B-8DEE-1779DCA41E70}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{722E6E77-D2F4-4E4B-8DEE-1779DCA41E70}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Product", "Product\Product.csproj", "{DDE02846-2E93-48A4-B23E-65535761874D}"
 EndProject
@@ -12,10 +12,18 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3EF3255E-F84C-47A4-B27A-B84B1CC2731C}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		plugin-mechanic.md = plugin-mechanic.md
 		readme.md = readme.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Order", "Order\Order.csproj", "{19D12151-07E5-4ED1-B577-DCC2F03C9340}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{177C9EB1-D8CD-44C5-9E20-299CAA51BDD1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RPBlazorPlugin.Loader", "RPBlazorPluginManager\RPBlazorPlugin.Loader.csproj", "{6FAAB613-A78E-46C7-8FE5-B2A17F957482}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RPBlazorPlugin.Core", "RPBlazorPlugin.Core\RPBlazorPlugin.Core.csproj", "{306B09BA-17F2-406D-9369-35F1BCA3AB20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +47,18 @@ Global
 		{19D12151-07E5-4ED1-B577-DCC2F03C9340}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19D12151-07E5-4ED1-B577-DCC2F03C9340}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19D12151-07E5-4ED1-B577-DCC2F03C9340}.Release|Any CPU.Build.0 = Release|Any CPU
+		{177C9EB1-D8CD-44C5-9E20-299CAA51BDD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{177C9EB1-D8CD-44C5-9E20-299CAA51BDD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{177C9EB1-D8CD-44C5-9E20-299CAA51BDD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{177C9EB1-D8CD-44C5-9E20-299CAA51BDD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FAAB613-A78E-46C7-8FE5-B2A17F957482}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FAAB613-A78E-46C7-8FE5-B2A17F957482}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FAAB613-A78E-46C7-8FE5-B2A17F957482}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FAAB613-A78E-46C7-8FE5-B2A17F957482}.Release|Any CPU.Build.0 = Release|Any CPU
+		{306B09BA-17F2-406D-9369-35F1BCA3AB20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{306B09BA-17F2-406D-9369-35F1BCA3AB20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{306B09BA-17F2-406D-9369-35F1BCA3AB20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{306B09BA-17F2-406D-9369-35F1BCA3AB20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
